@@ -15,16 +15,20 @@ export default function History() {
   }, []);
 
   const fetchReports = async () => {
-  try {
-    const { data } = await API.get("/analysis");
+    try {
+      const token = localStorage.getItem("token");
 
-    console.log("History Data:", data);
+      const { data } = await API.get("/analysis", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    setReports(data);
-  } catch (error) {
-    console.log("History Error:", error);
-  }
-};
+      setReports(data);
+    } catch (error) {
+      console.log("History Error:", error);
+    }
+  };
 
   const deleteReport = async (id) => {
     const confirmDelete = window.confirm(
@@ -34,14 +38,16 @@ export default function History() {
     if (!confirmDelete) return;
 
     try {
-      await API.delete(
-        `/analysis/${id}`
-      );
+      const token = localStorage.getItem("token");
+
+      await API.delete(`/analysis/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       setReports(
-        reports.filter(
-          (report) => report._id !== id
-        )
+        reports.filter((report) => report._id !== id)
       );
     } catch (error) {
       console.log(error);
@@ -65,7 +71,7 @@ export default function History() {
         </div>
 
         <p className="text-slate-500 mt-2">
-          View all previously analyzed resumes
+          View all your previously analyzed resumes
         </p>
       </div>
 
@@ -130,10 +136,7 @@ export default function History() {
                           className="text-blue-600"
                           size={18}
                         />
-
-                        <span>
-                          {report.fileName}
-                        </span>
+                        <span>{report.fileName}</span>
                       </div>
                     </td>
 
@@ -152,9 +155,7 @@ export default function History() {
                     <td className="py-4">
                       <button
                         onClick={() =>
-                          deleteReport(
-                            report._id
-                          )
+                          deleteReport(report._id)
                         }
                         className="flex items-center gap-2 text-red-600 hover:text-red-700"
                       >

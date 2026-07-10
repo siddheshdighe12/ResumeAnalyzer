@@ -20,34 +20,38 @@ export default function Dashboard() {
 
   const fetchReports = async () => {
     try {
-      const { data } = await API.get(
-        "/analysis"
-      );
+      const token = localStorage.getItem("token");
+
+      const { data } = await API.get("/analysis", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       setReports(data);
     } catch (error) {
-      console.log(error);
+      console.log("Dashboard Error:", error);
     }
   };
 
   const bestATS =
     reports.length > 0
       ? Math.max(
-          ...reports.map(
-            (report) => report.atsScore
-          )
+        ...reports.map(
+          (report) => report.atsScore
         )
+      )
       : 0;
 
   const averageATS =
     reports.length > 0
       ? Math.round(
-          reports.reduce(
-            (sum, report) =>
-              sum + report.atsScore,
-            0
-          ) / reports.length
-        )
+        reports.reduce(
+          (sum, report) =>
+            sum + report.atsScore,
+          0
+        ) / reports.length
+      )
       : 0;
 
   return (
