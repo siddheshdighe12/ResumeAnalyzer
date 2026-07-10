@@ -31,6 +31,7 @@ export default function Profile() {
     fetchProfile();
   }, []);
 
+  // Fetch Profile
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -52,6 +53,7 @@ export default function Profile() {
     }
   };
 
+  // Save Updated Profile
   const handleSave = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -68,14 +70,20 @@ export default function Profile() {
 
       alert(data.message);
 
-      // Update profile state
-      setProfile({
-        ...profile,
+      // Update Profile State
+      setProfile((prev) => ({
+        ...prev,
+        name: data.user.name,
+        email: data.user.email,
+      }));
+
+      // Update Form State
+      setFormData({
         name: data.user.name,
         email: data.user.email,
       });
 
-      // Update localStorage so navbar updates
+      // Update Local Storage
       const user =
         JSON.parse(localStorage.getItem("user")) || {};
 
@@ -87,10 +95,11 @@ export default function Profile() {
         JSON.stringify(user)
       );
 
+      // Exit Edit Mode
       setEditMode(false);
 
-      // Refresh page so Navbar updates
-      window.location.reload();
+      // Refresh Profile Data
+      fetchProfile();
     } catch (error) {
       alert(
         error.response?.data?.message ||
@@ -117,7 +126,6 @@ export default function Profile() {
               size={36}
               className="text-blue-600"
             />
-
             <h1 className="text-4xl font-bold">
               Profile
             </h1>
@@ -130,9 +138,7 @@ export default function Profile() {
 
         {!editMode ? (
           <button
-            onClick={() =>
-              setEditMode(true)
-            }
+            onClick={() => setEditMode(true)}
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl"
           >
             <Pencil size={18} />
@@ -149,9 +155,14 @@ export default function Profile() {
             </button>
 
             <button
-              onClick={() =>
-                setEditMode(false)
-              }
+              onClick={() => {
+                setEditMode(false);
+
+                setFormData({
+                  name: profile.name,
+                  email: profile.email,
+                });
+              }}
               className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-xl"
             >
               <X size={18} />
@@ -161,6 +172,7 @@ export default function Profile() {
         )}
       </div>
 
+      {/* Profile Card */}
       <div className="bg-white rounded-3xl shadow-md p-8">
         <div className="flex items-center gap-6">
           <div className="w-24 h-24 rounded-full bg-blue-600 text-white flex items-center justify-center text-3xl font-bold">
@@ -208,7 +220,9 @@ export default function Profile() {
           </div>
         </div>
 
+        {/* Info Cards */}
         <div className="grid md:grid-cols-2 gap-6 mt-10">
+
           <div className="bg-slate-50 p-5 rounded-2xl">
             <div className="flex items-center gap-3">
               <Mail className="text-blue-600" />
@@ -256,6 +270,7 @@ export default function Profile() {
                 : "-"}
             </p>
           </div>
+
         </div>
       </div>
     </div>
